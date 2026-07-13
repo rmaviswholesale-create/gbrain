@@ -15,6 +15,9 @@
 #
 # Prereqs: git with GitHub auth (private repos), gbrain CLI, an initialized
 # brain (`gbrain init`).
+#
+# Runs anywhere Linux-ish — designed to be run on the owner's Zo Computer
+# (see projects/setup-on-zo.md for the phone-friendly bootstrap).
 
 set -uo pipefail
 

@@ -36,6 +36,7 @@ repo, use a nickname, or describe a goal instead of a task. Before acting:
 | `Shadow` (private) | File dump from the "Shadow" PC — RicoOS MCP servers + Desktop backup | Archive | [shadow-ricoos.md](shadow-ricoos.md) |
 | `gbrain` (public fork) | This repo — the personal knowledge brain engine | **Active** | [gbrain.md](gbrain.md) |
 | ~30 forks | Reference forks of tools in the stack (aperture-router, browser-use, …) | Reference | [forks-and-references.md](forks-and-references.md) |
+| *(not a repo)* | Zo Computer — the owner's primary machine; phone is just the remote | **Active** | [zo-computer.md](zo-computer.md), setup: [setup-on-zo.md](setup-on-zo.md) |
 
 **Empty repos** (created but never pushed — candidates to delete or start):
 `Tasklet_clone`, `lost-found`, `temporal-hubble`, `docker_container_orchestrator`,

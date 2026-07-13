@@ -7,6 +7,18 @@ suggests Supabase for 1000+ files. GStack teaches agents how to code. GBrain tea
 agents everything else: brain ops, signal detection, content ingestion, enrichment,
 cron scheduling, reports, identity, and access control.
 
+## This fork: the owner's project registry (read before acting on owner requests)
+
+This fork doubles as its owner's context hub. When a request concerns any of the
+owner's projects — "Tasklet", "the bridge"/Notion system, "roklone"/Zo clone,
+"Shadow", or anything else they're building — read `projects/README.md` FIRST.
+It carries the agent protocol (resolve nickname → repo → project page →
+`gbrain search` → act), the full repo inventory, and per-project context pages.
+`scripts/wireup-projects.sh` keeps the brain sources wired; the owner's primary
+compute is currently a Zo Computer (see `projects/setup-on-zo.md`). The owner is
+still learning to code: resolve their intent via the registry before touching
+code, and explain results in plain language.
+
 ## North Star
 
 gbrain aims to be the **next Postgres for memory**: the most well-tested, widest-coverage,
