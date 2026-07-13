@@ -65,3 +65,26 @@ Notion jobs→Calendar sync).
   Custom GPT silently loses the tool.
 - This system touches real email, invoices, and business records. Prefer
   dry-runs and test databases; confirm before bulk writes.
+
+## Definition of done (2026-07-13 baseline)
+
+This one is mostly built — "complete and working" here means **verified**,
+not built from scratch:
+
+1. Every integration actually authenticates: Notion (OAuth token refresh),
+   Gmail send, Calendar create/list, Drive list, Slack send + events webhook,
+   QuickBooks customer/invoice calls. Hit each route once for real and
+   confirm a non-error response, not just that the server started.
+2. Resolve the storage split: find every remaining use of the in-memory
+   `MemStorage` and migrate it to the Drizzle/Postgres schema so user data
+   survives a restart. List what's still in-memory before declaring this done.
+3. The OpenAPI 3.1 schema served to the Custom GPT matches the live tool set
+   exactly — no drift between what's documented and what the 28+-tool agent
+   can actually call.
+4. Automations (Sheets→Notion sync, email→Notion job entries, Notion
+   jobs→Calendar sync) each run once successfully against real or sandboxed
+   data, not just unit-tested in isolation.
+5. Confirm which repo is authoritative going forward — `chatnotionreplit` is
+   current; `Chatnotion` should be explicitly archived or deleted once this
+   is confirmed, not left ambiguous.
+

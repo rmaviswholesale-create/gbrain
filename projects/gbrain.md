@@ -45,3 +45,22 @@ This repo documents itself thoroughly — do not guess:
   belongs in the database or private repos, not in this repo's git history.
 - Follow the upstream contribution rules in CLAUDE.md (version audit, JSONB
   rules, engine parity) when touching engine code.
+
+## Definition of done (2026-07-13 baseline)
+
+For the owner's purposes, "complete and working" means the memory layer is
+actually live and serving the other three projects:
+
+1. PR #1 (project registry + `scripts/wireup-projects.sh`) is merged.
+2. `./scripts/wireup-projects.sh` has been run **on the Zo Computer** (not a
+   throwaway remote session — see `projects/setup-on-zo.md`), so the brain
+   and all project checkouts live somewhere persistent.
+3. `gbrain doctor` reports clean on that Zo install.
+4. `gbrain sources list` shows `tasklet`, `agentic-bridge`, `roklone`, and
+   `gbrain` all federated and synced.
+5. `gbrain search "<any topic from any project>"` returns real hits — proof
+   the other three projects' context is actually queryable, not just cloned.
+6. gbrain is wired into Claude Code as an MCP server (`docs/mcp/CLAUDE_CODE.md`;
+   `setup-on-zo.md` Step 5.5) so agent sessions — including from a phone —
+   pull this context automatically instead of the owner repeating it.
+

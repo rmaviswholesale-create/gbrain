@@ -52,3 +52,27 @@ repo.
   the token auth intact when editing.
 - Browser-tool failures usually mean Playwright needs a container rebuild
   (`docker-compose build --no-cache`).
+
+## Definition of done (2026-07-13 baseline)
+
+This repo is mid-debug — treat the committed error logs as the starting
+point, not noise to ignore:
+
+1. Read `build_err.txt`, `dev_err.txt`, and `start_err.txt` FIRST — they are
+   the last known failures. Fix those specific errors before doing anything
+   else; don't assume a clean slate.
+2. `npm run build` completes with no errors, then delete the stale
+   `*_err.txt` / `*_utf8.txt` log files once superseded (keep them only if
+   still reproducing the same failure).
+3. `docker-compose up -d` boots cleanly; `curl http://localhost:3000/health`
+   returns `"status": "healthy"` with the expected tool count.
+4. Decide and finish the Gemini experiment: `test-gemini.ts`,
+   `test_gemini_raw.js`, `test_gemini_v1.js`, `list_models.js`, `list_raw.js`,
+   `check_methods.js`, and `models_list.json` look like scratch work for
+   adding a Gemini-backed tool. Either wire it into `src/tools/` for real and
+   delete the scratch scripts, or delete the scratch scripts if it was
+   abandoned — don't leave it half-done and unlabeled.
+5. Confirm `MCP_TOKEN` auth actually rejects unauthenticated requests to
+   `/tools/*` (a self-hosted tool server with 107 tools, including
+   `bash_execute`, is dangerous if the auth check regressed).
+

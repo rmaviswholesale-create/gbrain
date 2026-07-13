@@ -56,3 +56,21 @@ convention (`runtime-`, `mcp-`, `task-computer-`, `ui-` prefixes).
   first when debugging.
 - Do not confuse with `Tasklet_clone` (capital T, underscore) — that repo is
   empty.
+
+## Definition of done (2026-07-13 baseline)
+
+Currently at milestone M1 per the repo's own CLAUDE.md. To call this
+"complete and working," an agent should be able to check off:
+
+1. `npm run typecheck` and `npm run lint` are clean.
+2. `npm test` (Vitest, `__tests__/`) passes.
+3. `npm run build` succeeds and `npm run start` boots.
+4. `GET /api/health` returns healthy with a **reachable** Aperture Gateway
+   (confirm `APERTURE_BASE_URL` in `.env.local` actually resolves first —
+   this is the most common silent failure).
+5. Manually drive the dashboard at `/dashboard`: run an agent prompt and see
+   SSE streaming output, list models via the selector, browse files, run one
+   terminal command. All four must work, not just load without erroring.
+6. M2 (frontend component tree) and beyond are only "next," not "done" — say
+   explicitly which milestone the repo is actually at when reporting status.
+

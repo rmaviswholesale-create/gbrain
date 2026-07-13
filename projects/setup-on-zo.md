@@ -70,6 +70,38 @@ gbrain search "notion bridge quickbooks"
 
 Both searches should return hits from the project sources.
 
+## Step 5.5 — wire gbrain into Claude Code as an MCP server (one time)
+
+If Claude Code CLI runs directly on Zo (in Zo's terminal), point it at the
+brain that's already local to that machine:
+
+```bash
+claude mcp add gbrain -- gbrain serve
+```
+
+If you're using Claude Code from your **phone** (remote/cloud sessions like
+this one), those run in a separate, throwaway container — not on Zo — so they
+need the brain exposed over the network instead of stdio:
+
+```bash
+# On Zo: start the HTTP server and mint a token
+gbrain serve --http --port 3131 &
+gbrain auth create "phone-claude-code"
+# copy the gbrain_xxx token it prints, and expose port 3131 publicly, e.g.:
+#   tailscale funnel 3131      (free, see docs/mcp/ALTERNATIVES.md)
+#   ngrok http 3131            (paid, fixed domain)
+```
+
+Then, from any phone Claude Code session, run:
+
+```bash
+claude mcp add gbrain -t http https://YOUR-TUNNEL-DOMAIN/mcp \
+  -H "Authorization: Bearer gbrain_xxx"
+```
+
+Verify with `search for tasklet` inside that session — you should see hits
+from your registered project sources. Full reference: `docs/mcp/CLAUDE_CODE.md`.
+
 ## Step 6 — teach Zo's own assistant the protocol (one time)
 
 Tell Zo's assistant, in chat:
