@@ -24,7 +24,24 @@ repo, use a nickname, or describe a goal instead of a task. Before acting:
 5. **Explain like the owner is new to code.** Plain language summaries, no
    unexplained jargon.
 
-## Repo inventory (as of 2026-07-13)
+## ⚠️ Needs attention right now (as of 2026-07-18)
+
+Five open, unmerged Claude-Code-generated PRs across three repos are the
+actual current state of work — check these before assuming any project's
+docs/README reflect reality:
+
+| Repo | Open PR | Why it matters |
+|---|---|---|
+| `tasklet-clone` | [#1](https://github.com/rmaviswholesale-create/tasklet-clone/pull/1) | Fixes a **red CI gate** (41 lint + 27 typecheck errors on `master` itself) |
+| `tasklet-clone` | [#2](https://github.com/rmaviswholesale-create/tasklet-clone/pull/2) | Removes the hardcoded Aperture Gateway dependency; adds DeepSeek/OpenRouter + a shell-injection fix |
+| `tasklet-clone` | [#3](https://github.com/rmaviswholesale-create/tasklet-clone/pull/3) | Cleanup pass on top of #1/#2 |
+| `roklone` | [#1](https://github.com/rmaviswholesale-create/roklone/pull/1) | Fixes a hardcoded API key + hardcoded UI auth token, adds 43 tests and free-hosting deploy — **not a draft, ready to review** |
+| `gbrain` | [#1](https://github.com/rmaviswholesale-create/gbrain/pull/1) | This project registry + the wireup script itself |
+
+Details and a merge order are in each project's own page
+(`tasklet.md`, `roklone.md`) under "Definition of done."
+
+## Repo inventory (as of 2026-07-18)
 
 | Repo | What it is | Status | Page |
 |---|---|---|---|

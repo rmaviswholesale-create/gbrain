@@ -1,19 +1,20 @@
 ---
 title: roklone (Zo Computer clone)
 type: project
-status: wip
+status: active
 repo: https://github.com/rmaviswholesale-create/roklone
 tags: [mcp, tools, docker, playwright, self-hosted]
 ---
 
 # roklone — self-hosted "Zo Computer" clone (MCP tool server)
 
-**Repo:** `rmaviswholesale-create/roklone` (private). WIP. [Source: repo SETUP.md]
+**Repo:** `rmaviswholesale-create/roklone` (private). [Source: repo SETUP.md +
+open PR, checked 2026-07-18]
 
 ## What it is
 
 A self-hosted agentic environment modeled on Zo Computer (see the `Zo` fork):
-a Node/TypeScript server exposing **~107 tools** — bash execution, filesystem,
+a Node/TypeScript server exposing tools — bash execution, filesystem,
 memory (fact storage), Playwright browser automation, and integrations
 (GitHub, Slack, Notion, OpenAI, Anthropic) — over two surfaces:
 
@@ -21,58 +22,61 @@ memory (fact storage), Playwright browser automation, and integrations
    Bearer-token auth via `MCP_TOKEN`
 2. **MCP stdio server** (`dist/index.js`) for Claude Desktop / Cursor
 
+## ⚠️ One open PR fixes exactly what was broken — review and merge it
+
+`main` was left mid-debug (committed `build_err.txt`/`dev_err.txt`/
+`start_err.txt`, half-finished Gemini experiment scripts, a hardcoded Gemini
+API key, a hardcoded auth token shipped in the UI source). **[PR #1](https://github.com/rmaviswholesale-create/roklone/pull/1)**
+— "v2 revamp: provider-routed chat, secure UI, test suite, free hosting" —
+fixes essentially all of it and is **not a draft** (ready for real review),
+last updated 2026-07-18:
+
+- Removes the hardcoded Gemini key; adds a provider factory so Claude /
+  Gemini / GPT / Ollama all work, plus a zero-key `mock-echo` demo provider
+- Removes the hardcoded bearer token from the UI source — the frontend now
+  shows an unlock overlay and stores the token in localStorage instead
+- Adds a conversation history panel, safe markdown rendering, model/persona
+  pickers
+- **43 vitest + supertest tests**, no API keys or network required
+- Multi-stage `Dockerfile` + a `render.yaml` blueprint for one-click free
+  hosting (Render), fixes a broken `docker-compose` port mapping, commits
+  `package-lock.json` for reproducible builds
+- Rewrites the README (was a broken UTF-16 stub)
+
+This is the single highest-leverage action on this repo: merging it turns
+"broken, mid-debug, hardcoded secrets" into "tested, documented, deployable
+for free."
+
 ## Stack & layout
 
-- Node 20+, TypeScript (`npm run build` → `dist/`), Express-style HTTP server
-- Docker-first: `docker-compose.yml` (with optional postgres/redis services,
-  optional Docker-socket mount for Docker tools via `DOCKER_ENABLED=1`)
-- `src/` (tools live in `src/tools/`), `web/` (frontend), `skills/` dir
-- The **real documentation is `CLAUDE.md` (~24KB)** — the README is a
-  placeholder (24 bytes). Read CLAUDE.md first.
-
-## Status signals
-
-Committed debug artifacts (`build_err.txt`, `dev_err.txt`, `start_err.txt`,
-`test_gemini_*.js`, `models_list.json`) show mid-debugging state, including
-Gemini API experiments. Expect the build to possibly be broken; check
-`build_err.txt` / `start_err.txt` for the last known failures before assuming
-a fresh bug.
+- Node 20+/24+, TypeScript, Express-style HTTP server, Docker-first
+- `src/` (tools in `src/tools/`), `web/` (frontend), `skills/` dir
+- Read `CLAUDE.md` for real documentation — the README was a stub before PR #1
 
 ## Origin note
 
-Developed on the Windows PC named "Shadow" (`/c/Users/Shadow/Projects/
-zo-computer-clone`) — same machine whose files are archived in the `Shadow`
-repo.
+Originally developed on the Windows "Shadow" PC (now suspended — see
+`shadow-ricoos.md`). Current work happens wherever the owner runs Claude Code.
 
 ## Gotchas for agents
 
-- Secrets go in `.env` (`MCP_TOKEN`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`,
-  `GITHUB_TOKEN`, `SLACK_BOT_TOKEN`, `NOTION_API_KEY`) — never commit them.
-- Bash/file tools give an agent full machine access — keep resource limits and
-  the token auth intact when editing.
-- Browser-tool failures usually mean Playwright needs a container rebuild
-  (`docker-compose build --no-cache`).
+- Until PR #1 merges, `main` still has the hardcoded Gemini key and bearer
+  token — don't treat `main` as safe to deploy as-is.
+- Secrets go in `.env` — never commit them (this was the exact bug PR #1
+  fixes).
+- Bash/file tools give an agent full machine access — keep resource limits
+  and token auth intact when editing.
 
-## Definition of done (2026-07-13 baseline)
+## Definition of done (2026-07-18 baseline)
 
-This repo is mid-debug — treat the committed error logs as the starting
-point, not noise to ignore:
-
-1. Read `build_err.txt`, `dev_err.txt`, and `start_err.txt` FIRST — they are
-   the last known failures. Fix those specific errors before doing anything
-   else; don't assume a clean slate.
-2. `npm run build` completes with no errors, then delete the stale
-   `*_err.txt` / `*_utf8.txt` log files once superseded (keep them only if
-   still reproducing the same failure).
-3. `docker-compose up -d` boots cleanly; `curl http://localhost:3000/health`
-   returns `"status": "healthy"` with the expected tool count.
-4. Decide and finish the Gemini experiment: `test-gemini.ts`,
-   `test_gemini_raw.js`, `test_gemini_v1.js`, `list_models.js`, `list_raw.js`,
-   `check_methods.js`, and `models_list.json` look like scratch work for
-   adding a Gemini-backed tool. Either wire it into `src/tools/` for real and
-   delete the scratch scripts, or delete the scratch scripts if it was
-   abandoned — don't leave it half-done and unlabeled.
-5. Confirm `MCP_TOKEN` auth actually rejects unauthenticated requests to
-   `/tools/*` (a self-hosted tool server with 107 tools, including
-   `bash_execute`, is dangerous if the auth check regressed).
-
+1. **Review PR #1 line by line, then merge it** — it fixes the hardcoded
+   secrets, the broken deploy, and adds the only test coverage this repo has.
+2. After merge: run `npm test` (43 tests should pass), then deploy via the
+   new `render.yaml` blueprint or Docker and confirm `/health` reports
+   healthy with the real tool count.
+3. Decide whether the Gemini experiment scripts the old `main` carried
+   (`test-gemini.ts`, `list_models.js`, etc.) are superseded by PR #1's
+   provider factory — if so, they can be deleted once merged.
+4. Confirm `MCP_TOKEN` (or the new UI unlock flow) actually rejects
+   unauthenticated requests to `/tools/*` — this server can run bash
+   commands, so auth regressions are high-severity.
