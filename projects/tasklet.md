@@ -3,93 +3,70 @@ title: Rico's Tasklet (tasklet-clone)
 type: project
 status: active
 repo: https://github.com/rmaviswholesale-create/tasklet-clone
-tags: [nextjs, agents, dashboard, aperture, self-hosted]
+tags: [nextjs, agents, dashboard, self-hosted, loops]
 ---
 
 # Rico's Tasklet — self-hosted AI agent command center
 
 **Repo:** `rmaviswholesale-create/tasklet-clone` (private). Most active project
-in the whole account. [Source: repo commits + open PRs, checked 2026-07-18]
+in the account. [Source: repo PR history, checked 2026-11-07]
 
 ## What it is
 
-A self-hosted, single-user clone of tasklet.ai: a marketing landing page plus a
-working dashboard with an agent runner (SSE streaming), terminal, file browser,
-and model selector.
+A self-hosted, single-user clone of tasklet.ai: marketing landing page plus a
+working dashboard (agent runner with SSE streaming, terminal, file browser,
+model selector, `/engine` DAG playground), now with Tasklet-parity features.
 
-## Real status: further along than the docs say — read the PRs, not just CLAUDE.md
+## Current status: the July backlog is all merged, project is in hardening + automation mode
 
-The repo's own `CLAUDE.md` still says "M1: Workspace Bootstrap ← YOU ARE HERE"
-— **that's stale.** The commit log shows all four milestones (M1–M4) shipped
-by 2026-07-02, followed by a "v1.1: 60-agent swarm complete" commit: 19 API
-routes (up from 6), mobile-responsive dashboard, real Gmail/Calendar/Drive
-integration, e2e tests, and production infra (process manager, backups,
-health monitoring, rate limiting). Don't trust the milestone banner — check
-`git log` or the open PRs below for the real state.
+Every PR that was stuck open in July has landed. Timeline of what shipped:
 
-## ⚠️ Three open, unmerged, unreviewed PRs (this is the actual todo list)
-
-All three are drafts sitting on `master`, all Claude-Code-generated, all
-still open as of 2026-07-18:
-
-| PR | What it does | Status |
+| When | PR | What |
 |---|---|---|
-| [#1](https://github.com/rmaviswholesale-create/tasklet-clone/pull/1) | Rewrites the stale CLAUDE.md + fixes a **red CI gate** (41 ESLint errors, 27 tsc errors on `master` itself) | Draft, open since 07-08 |
-| [#2](https://github.com/rmaviswholesale-create/tasklet-clone/pull/2) | **Removes the hardcoded Aperture Gateway dependency.** Adds a DeepSeek→OpenRouter provider failover chain using the owner's own API keys, a new `/engine` DAG-visualization playground, and a security fix (replaced a shell `execSync` curl with validated `fetch` — closes a shell-injection risk) | Draft, open since 07-11 |
-| [#3](https://github.com/rmaviswholesale-create/tasklet-clone/pull/3) | Cleanup pass on top of #1/#2: dead code removal, de-duplication, stronger typing | Draft, open since 07-12 |
+| 2026-07-19 | #1, #2, #3 | CLAUDE.md rewrite + green CI gate; **DeepSeek → OpenRouter provider chain** (Aperture Gateway is now optional legacy) + `/engine` playground + shell-injection fix; dead-code cleanup |
+| 2026-08-16 | #4 | **Tasklet parity**: computer use, sandbox, instant apps, planner, memory, triggers |
+| 2026-10-25 | #5 | **Security hardening** (red-team pass): default-deny API auth, no wildcard CORS, SSRF-safe `safeFetch`, path-traversal fixes, sandboxed `terminal/exec`, engine bug fixes |
+| 2026-10-25 | #6 | `.mcp.json` so cloud/phone sessions start the context-mode MCP server |
+| 2026-10-31 | #8, #9 | Fix a test that failed on the 31st; **agent foundation kit** (GOAL.md, specialist agents, verify loop, Stop hook, CI guard) |
+| 2026-11-03 | #7, #10 | **Loop engineering**: loop-state, guardrails, and prompts for nightly docs sweep, changelog, coverage goal, CI watcher, repo cleanup |
 
-**These three build on each other** (#1 fixes the CI gate everything else
-needs; #2 is the architecture change; #3 cleans up after). Landing them, in
-that order, is higher leverage than any other work on this repo right now —
-until they merge, `master` still has broken CI and the old hardcoded-gateway
-dependency.
+No open PRs as of 2026-11-07.
 
-## Stack
+## Things to know before touching it
 
-- Next.js 16 (App Router) + React 19, TypeScript **strict**, TailwindCSS v4,
-  shadcn-style components (`components.json`)
-- Vitest, ESLint, Docker, PM2 process management, Tailscale Funnel for
-  public access, daily backups
-- Node.js 24+ required
+- **Read `GOAL.md` and `CLAUDE.md` first** — they're current now (the old
+  "M1 — YOU ARE HERE" banner is gone). `.claude/` holds specialist agents
+  (triage, tester, implementer, reviewer), a `fix-issue` pipeline, and a
+  `verify-loop`. A Stop hook runs fast checks after code changes and sends
+  failures back (max 3 tries).
+- `.claude/settings.json` denies force-push, pushes to master/main, PR merges,
+  deploys, publishing and `.env` reads — deny rules are a speed bump; branch
+  protection on `master` is the real lock.
+- Security model: all API routes need `ENGINE_API_TOKEN` in production except
+  `/api/health` and `/api/webhook/generic`; files confined to `/tmp/tasklet`.
+- Model calls: DeepSeek primary → OpenRouter fallback → optional Aperture.
+  Keys in `.env.local` (`DEEPSEEK_API_KEY`, `OPENROUTER_API_KEY`).
+- `npm run check` = lint + typecheck + build (what CI runs). ~510 tests pass.
 
-## Key entry points
+## Known gaps (from the loop-setup PR)
 
-- `src/` (app layer) vs top-level `lib/` (platform engine) — see PR #1's
-  rewritten CLAUDE.md for the split, once merged
-- 19 API routes as of v1.1: agent run (SSE), chat completions proxy, terminal
-  exec, file CRUD, browser screenshot, health, models, integrations (+
-  connect), dashboard stats, logs, tools list, webhooks, Gmail
-  search/send, Calendar list/create, Drive list
-- After PR #2: model calls go through **DeepSeek (primary) → OpenRouter
-  (fallback) → legacy Aperture (optional)** instead of a single hardcoded
-  gateway — configure `DEEPSEEK_API_KEY` / `OPENROUTER_API_KEY` in
-  `.env.local`
-- Commands: `npm run dev` / `build` / `start` / `lint` / `typecheck` /
-  `npm run check` (all three combined — this is what CI runs)
+1. Coverage doesn't run — `@vitest/coverage-v8` isn't installed, so the
+   coverage loop can't work yet.
+2. No coverage target is set in CLAUDE.md for the coverage goal.
+3. The nightly routines (docs sweep, changelog, CI watcher) read prompts from
+   `master` but **have not been created as scheduled routines** — the prompts
+   exist, nothing runs them yet.
+4. `LICENSE` still carries the upstream template author's copyright (must stay).
 
-## Gotchas for agents
+## Definition of done (2026-11-07 baseline)
 
-- The repo is heavily agent-configured (`.claude/`, `.cursor/`, `.clinerules`,
-  `AGENTS.md`, …) — read the repo's own CLAUDE.md before editing (but verify
-  it against PR #1 first — the one on `master` is stale).
-- Before assuming the Aperture Gateway is required, check whether PR #2 has
-  merged — post-merge, DeepSeek/OpenRouter is primary and Aperture is
-  optional legacy.
-- Do not confuse with `Tasklet_clone` (capital T, underscore) — that repo is
-  empty.
+1. Install `@vitest/coverage-v8`, pick a coverage target, record it in CLAUDE.md.
+2. Create the nightly routines from `.claude/loops/` so they actually run.
+3. Confirm production deploy is on the post-hardening build: `ENGINE_API_TOKEN`
+   set, `/api/health` reachable, an unauthenticated call to another route gets
+   401/503.
+4. Drive the dashboard end to end once: agent prompt with SSE streaming,
+   `/engine` DAG run, file browse, a terminal command.
+5. Decide whether to retire the Aperture Gateway dependency entirely.
 
-## Definition of done (2026-07-18 baseline)
-
-1. **Review and merge PR #1** — it's the CI fix everything else depends on.
-   Nothing else on this repo can show a green check until this lands.
-2. **Review and merge PR #2** — biggest architectural decision pending: moving
-   off a hardcoded Aperture Gateway onto the owner's own DeepSeek/OpenRouter
-   keys, plus a real security fix (shell injection). Worth reading closely,
-   not rubber-stamping.
-3. **Review and merge PR #3** — cleanup, lowest risk of the three, land last.
-4. After all three land: `npm run check` clean on `master`, `/api/health`
-   returns healthy, and manually drive the dashboard — run an agent prompt
-   and watch SSE stream, list models, browse files, run one terminal command,
-   and (if #2 merged) try the new `/engine` DAG playground.
-5. Decide what happens to the Aperture Gateway dependency long-term once #2
-   is evaluated — keep as fallback, or retire it from the stack entirely.
+Do not confuse with `Tasklet_clone` (capital T) — an empty repo.
