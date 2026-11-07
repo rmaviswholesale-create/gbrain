@@ -51,7 +51,8 @@ This repo documents itself thoroughly — do not guess:
 For the owner's purposes, "complete and working" means the memory layer is
 actually live and serving the other three projects:
 
-1. PR #1 (project registry + `scripts/wireup-projects.sh`) is merged.
+1. ~~PR #1 (project registry + `scripts/wireup-projects.sh`) merged~~ — done
+   2026-07-18. Registry refreshed 2026-11-07.
 2. `./scripts/wireup-projects.sh` has been run **on the Zo Computer** (not a
    throwaway remote session — see `projects/setup-on-zo.md`), so the brain
    and all project checkouts live somewhere persistent.

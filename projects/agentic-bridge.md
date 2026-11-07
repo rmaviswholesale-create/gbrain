@@ -54,6 +54,11 @@ Notion jobs→Calendar sync).
 | `chatnotionserver` | Stub, README-only ("new project") |
 | `AgenticNotionBridge` | Empty repo, never pushed |
 
+## Recent activity
+
+Last real code change: Dec 2025. On 2026-10-25 a `.mcp.json` was merged so
+cloud sessions start context-mode (checked 2026-11-07). No open PRs.
+
 ## Gotchas for agents
 
 - It depends on **Replit platform services** (Connectors OAuth, identity
